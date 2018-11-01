@@ -60,6 +60,10 @@ check_id() {
 # ===== Ubuntu ===== #
 
 get_ubuntu() {
+  if [ "$LIBC_DRY_RUN" = "1" ]; then
+    echo "get_ubuntu" "$1" "$2"
+    return
+  fi
   local url="$1"
   local info="$2"
   local tmp=`mktemp -d || mktemp -d -t "libc-database" || die "Cannot get temp dir"`
@@ -90,7 +94,7 @@ get_current_ubuntu() {
   local arch=$2
   local pkg=$3
   local info=ubuntu-$version-$arch-$pkg
-  echo "Getting package location for ubuntu-$version-$arch"
+  #echo "Getting package location for ubuntu-$version-$arch"
   local url=`(wget http://packages.ubuntu.com/$version/$arch/$pkg/download -O - 2>/dev/null \
                | grep -oh 'http://[^"]*libc6[^"]*.deb') || die "Failed to get package version"`
   get_ubuntu $url $info
