@@ -39,6 +39,7 @@ process_libc() {
   local libc=$1
   local id=$2
   local info=$3
+  local url=$4
   echo "  -> Writing libc to db/${id}.so"
   cp $libc db/${id}.so
   echo "  -> Writing symbols to db/${id}.symbols"
@@ -46,6 +47,7 @@ process_libc() {
      > db/${id}.symbols
   echo "  -> Writing version info"
   echo "$info" > db/${id}.info
+  echo "$url" > db/${id}.url
 }
 
 check_id() {
@@ -66,14 +68,14 @@ get_ubuntu() {
   fi
   local url="$1"
   local info="$2"
-  local tmp=`mktemp -d || mktemp -d -t "libc-database" || die "Cannot get temp dir"`
+  local tmp=`mktemp -d`
   echo "Getting $info"
   echo "  -> Location: $url"
   local id=`echo $url | perl -n -e '/(libc6[^\/]*)\./ && print $1'`
   echo "  -> ID: $id"
   check_id $id || return
   echo "  -> Downloading package"
-  wget $url 2>/dev/null -O $tmp/pkg.deb || die "Failed to download package from $url"
+  wget "$url" 2>/dev/null -O $tmp/pkg.deb || die "Failed to download package from $url"
   echo "  -> Extracting package"
   pushd $tmp 1>/dev/null
   ar x pkg.deb || die "ar failed"
@@ -82,7 +84,7 @@ get_ubuntu() {
   suffix=
   cnt=1
   for libc in $(find $tmp -name libc.so.6 || die "Cannot locate libc.so.6"); do
-    process_libc $libc $id$suffix $info
+    process_libc $libc $id$suffix $info $url
     cnt=$((cnt+1))
     suffix=_$cnt
   done
