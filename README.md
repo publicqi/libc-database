@@ -51,3 +51,10 @@ Download the whole libs corresponding to a libc ID.
         -> Package saved to libs/libc6_2.23-0ubuntu10_amd64
     $ ls libs/libc6_2.23-0ubuntu10_amd64
     ld-2.23.so ... libc.so.6 ... libpthread.so.0 ...
+
+## Modification by publicqi
+
+[b6128d5](https://github.com/blukat29/libc-database/commit/b6128d5b4e4cb2a895a0127dc0a4907d9baf14f8) is to add debug symbols when downloading. You can change it if you don't want them.
+
+[287ca62](https://github.com/blukat29/libc-database/commit/287ca62960181a6bbd206e679c7331cae305a87b) is to add support to dump symbols from libc with debug symbols. Variables are now locatable \0/
+
