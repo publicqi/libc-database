@@ -79,11 +79,22 @@ get_ubuntu() {
   popd 1>/dev/null
   suffix=
   cnt=1
+  is_debug=1
   for libc in $(find $tmp -name libc.so.6 || die "Cannot locate libc.so.6"); do
     process_libc $libc $id$suffix $info $url
     cnt=$((cnt+1))
     suffix=_$cnt
+    is_debug=0
   done
+
+  if [$is_debug]; then
+    for libc in $(find $tmp -name libc-*.so || die "Cannot locate libc-2.*.so"); do
+      process_libc $libc $id$suffix $info $url
+      cnt=$((cnt+1))
+      suffix=_$cnt
+    done
+  fi
+
   rm -rf $tmp
 }
 
@@ -114,7 +125,7 @@ get_current_ubuntu() {
 get_all_ubuntu() {
   local info=$1
   local url=$2
-  for f in `wget $url/ -O - 2>/dev/null | egrep -oh 'libc6(-i386|-amd64)?_[^"]*(amd64|i386)\.deb' |grep -v "</a>"`; do
+  for f in `wget $url/ -O - 2>/dev/null | egrep -oh 'libc6(-dbg|-i386|-amd64)?_[^"]*(amd64|i386)\.deb' |grep -v "</a>"`; do
     get_ubuntu $url/$f $1
   done
 }
